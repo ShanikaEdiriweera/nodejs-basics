@@ -15,11 +15,11 @@ io.on('connection', function(client){
         client.nickname = name;
         console.log(name + " joined the chat!");
     });
-    
     client.on('messages', function(message){
-        console.log(nickname + ": " + message);
+        // var nickname = "nickname";
         var nickname = client.nickname;
-        client.broadcast.emit("message", nickname + ": " + message);
+        console.log(nickname + ": " + message);       
+        client.broadcast.emit("messages", nickname + ": " + message);
         client.emit("messages", nickname + ": " + message);
     });
 });
@@ -27,5 +27,4 @@ io.on('connection', function(client){
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/views/index.html');
 });
-
 server.listen(8080);

@@ -18,7 +18,8 @@
   <input id="chat_input" type="text">
   
   <br><br>
-  <input type="submit" value="Submit">
+  <input id="btn" type="submit" value="Submit">
+  <!-- <button id="btn">Send</button> -->
 </form> 
 
 <p>If you click the "Submit" button, the form-data will be sent to the socket.io server".</p>
@@ -43,7 +44,10 @@
         var message = $('#chat_input').val();
         //alert("submit: "+message)
         socket.emit('messages', message);
+        $('#chat_input').val("");
+        e.preventDefault();
     });
+
 </script>
 </body>
 </html>
