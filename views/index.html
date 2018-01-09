@@ -1,0 +1,49 @@
+<!-- socket.io client -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Socket.io Client</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    </head>
+<body>
+
+<form id="chat_form">
+  <h2>Chat box:</h2><br>
+  <h3 id="status"></h3><br>
+  <div id="chat_area">
+    <p id="chat_box"></p>
+  </div>
+  <br>
+  <input id="chat_input" type="text">
+  
+  <br><br>
+  <input type="submit" value="Submit">
+</form> 
+
+<p>If you click the "Submit" button, the form-data will be sent to the socket.io server".</p>
+
+<script>
+    var socket = io.connect('http://localhost:8080');
+
+    socket.on('connect', function(data){
+        $('#status').html('Connected to Chat Room');
+        nickname = prompt("What is your nickname?");
+        socket.emit('join', nickname);
+    });
+
+    socket.on('messages', function(data){
+        // alert("data: "+data);
+        var chat_history = $('#chat_box').val();
+        //alert("chat_history: "+chat_history);
+        $('#chat_box').append(chat_history + "<br>" + data);
+    });
+
+    $('#chat_form').submit(function(e){
+        var message = $('#chat_input').val();
+        //alert("submit: "+message)
+        socket.emit('messages', message);
+    });
+</script>
+</body>
+</html>
