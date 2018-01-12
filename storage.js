@@ -12,9 +12,6 @@ client.get("message1", function(err, reply){
 });
 
 //lists
-client.del("messages", function(err, reply){
-    console.log("list delete :"+reply);
-});
 client.llen("messages", function(err, length){
     console.log("length: "+length);
 });
@@ -32,6 +29,9 @@ client.lpush("messages", message2, function(err, reply){
 
 client.lrange("messages", 0, -1, function(err, messages){
     console.log("messages: "+messages);
+});
+client.del("messages", function(err, reply){
+    console.log("list delete :"+reply);
 });
 
 //sets

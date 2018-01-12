@@ -2,8 +2,8 @@
 // ===============
 // ISSUES: 
 // 1) When a new client reconnect, the chat again append
-// 2) Show list of names in chat
-// 3) Show client's name
+// 2) Add a clear chat button
+// 3) clear names list when server disconnect
 
 var express = require('express');
 var app = express();
@@ -35,8 +35,23 @@ io.on('connection', function(client){
 
 io.on('connection', function(client){
     client.on('join', function(name){
+        if (name == null){
+            name = 'Anonymous';
+        }
         client.nickname = name;
         console.log(name + " joined the chat!");
+
+        //adding names
+        client.broadcast.emit("add member", name);
+        redisClient.smembers('members', function(err, names) {
+            names.forEach(function(name){	
+                client.emit('add member', name);	
+            });	
+        });
+        client.emit('add member', client.nickname)
+        redisClient.sadd("members", name);
+
+        // reading messages from in-memory messages array
         // messages.forEach(function(message) {	
         //     client.emit("messages", message.name + ": " + message.data);	
         // });
@@ -55,6 +70,14 @@ io.on('connection', function(client){
         client.broadcast.emit("messages", nickname + ": " + message);
         client.emit("messages", nickname + ": " + message);
         storeMessageRedis(client.nickname, message);
+    });
+
+    // remove clients on disconnect
+    client.on('disconnect', function(name){
+        console.log("client disconnected...");
+        console.log(client.nickname + " left the chat!");
+        client.broadcast.emit("remove member", client.nickname);
+        redisClient.srem("members", client.nickname);	
     });
 });
 

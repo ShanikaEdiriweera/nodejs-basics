@@ -8,15 +8,19 @@
     </head>
 <body>
 
-<form id="chat_form">
-  <h2>Chat box:</h2><br>
-  <h3 id="status"></h3><br>
-  <div id="chat_area">
+<h2>Chat box</h2><br>
+<h4 id="status"></h4><br>
+<div>
+    <h3>Active members</h3>
+    <ul id="members">
+    </ul>
+</div>
+<div id="chat_area">
     <p id="chat_box"></p>
-  </div>
-  <br>
+</div><br>
+
+<form id="chat_form">
   <input id="chat_input" type="text">
-  
   <br><br>
   <input id="btn" type="submit" value="Submit">
   <!-- <button id="btn">Send</button> -->
@@ -33,11 +37,24 @@
         socket.emit('join', nickname);
     });
 
+    socket.on('add member', function(name) {
+        var member = $('<li>'+name+'</li>').data('name', name);
+        $('#members').append(member);	
+    });
+
+    socket.on('remove member', function(name) {
+        $('#members li').filter(function() { return $.text([this]) === name; }).remove();	
+    });
+
     socket.on('messages', function(data){
         // alert("data: "+data);
         var chat_history = $('#chat_box').val();
         //alert("chat_history: "+chat_history);
         $('#chat_box').append(chat_history + "<br>" + data);
+    });
+
+    socket.on('disconnect', function(data){
+        $('#status').html('Chatroom Server Down!');        
     });
 
     $('#chat_form').submit(function(e){
